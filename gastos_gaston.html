@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mis Gastos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #222222;
+    --border: #2e2e2e;
+    --accent: #c8f560;
+    --accent-dim: #8fb33a;
+    --text: #f0f0f0;
+    --text-muted: #888;
+    --text-dim: #555;
+    --danger: #ff5f5f;
+    --success: #c8f560;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+  }
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+  }
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+  .logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .logo span {
+    display: block;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .init-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--text-muted);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .init-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 1.5rem;
+    background: var(--surface);
+    padding: 4px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+  }
+  .tab {
+    padding: 9px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 7px;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s;
+    border: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab.active {
+    background: var(--accent);
+    color: #0f0f0f;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+  }
+
+  .field { margin-bottom: 12px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+  .field label .req { color: var(--accent); margin-left: 2px; }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    border-radius: 7px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+  }
+  .field select option { background: #1a1a1a; }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--accent);
+  }
+  .field textarea { resize: vertical; min-height: 60px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  .btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    color: #0f0f0f;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.01em;
+    transition: opacity 0.15s;
+    margin-top: 4px;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-secondary {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    margin-top: 8px;
+    transition: border-color 0.15s;
+  }
+  .btn-secondary:hover { border-color: var(--text-muted); }
+
+  .status {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    display: none;
+    font-family: 'DM Mono', monospace;
+  }
+  .status.ok { display: block; background: #1c2b0a; color: var(--accent); border: 0.5px solid var(--accent-dim); }
+  .status.err { display: block; background: #2b0a0a; color: var(--danger); border: 0.5px solid #7a2020; }
+  .status.loading { display: block; background: var(--surface2); color: var(--text-muted); border: 0.5px solid var(--border); }
+
+  .upload-area {
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 14px;
+    transition: all 0.15s;
+    margin-bottom: 12px;
+  }
+  .upload-area:hover { border-color: var(--accent); color: var(--accent); }
+  .upload-icon { font-size: 32px; margin-bottom: 10px; }
+  #fileInput { display: none; }
+  #imgPreview {
+    width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+    margin-bottom: 12px;
+    display: none;
+  }
+  .analyzing {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .preview-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+    border-bottom: 0.5px solid var(--border);
+    gap: 12px;
+  }
+  .preview-row:last-child { border-bottom: none; }
+  .preview-key {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .preview-val {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    text-align: right;
+  }
+  .preview-val.accent { color: var(--accent); }
+
+  .dot-loader {
+    display: inline-block;
+    animation: blink 1.2s infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">
+      Tracker
+      <span>Mis gastos</span>
+    </div>
+    <button class="init-btn" onclick="initSheet()">⚙ inicializar planilla</button>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('manual')" id="tab-manual">✏ Manual</button>
+    <button class="tab" onclick="switchTab('foto')" id="tab-foto">📷 Foto de ticket</button>
+  </div>
+
+  <!-- PANEL MANUAL -->
+  <div id="panel-manual">
+    <div class="card">
+      <div class="card-label">Obligatorios</div>
+      <div class="grid2">
+        <div class="field">
+          <label>Importe <span class="req">*</span></label>
+          <input type="number" id="importe" placeholder="0.00" step="0.01" />
+        </div>
+        <div class="field">
+          <label>Moneda <span class="req">*</span></label>
+          <select id="moneda">
+            <option value="">—</option>
+            <option value="ARS">ARS</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Concepto <span class="req">*</span></label>
+        <input type="text" id="concepto" placeholder="Ej: almuerzo, supermercado, nafta..." />
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>Tipo de pago <span class="req">*</span></label>
+          <select id="tipoPago">
+            <option value="">—</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Débito">Débito</option>
+            <option value="Crédito">Crédito</option>
+            <option value="Transferencia">Transferencia</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Banco/Entidad <span class="req">*</span></label>
+          <select id="banco">
+            <option value="">—</option>
+            <option value="Galicia Visa">Galicia Visa</option>
+            <option value="Galicia Amex">Galicia Amex</option>
+            <option value="BBVA">BBVA</option>
+            <option value="Mercado Pago">Mercado Pago</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Opcionales</div>
+      <div class="grid2">
+        <div class="field">
+          <label>Fecha</label>
+          <input type="date" id="fecha" />
+        </div>
+        <div class="field">
+          <label>Comercio</label>
+          <input type="text" id="comercio" placeholder="Nombre del local" />
+        </div>
+      </div>
+      <div class="grid3">
+        <div class="field">
+          <label>Impuestos</label>
+          <input type="number" id="impuestos" placeholder="0.00" step="0.01" />
+        </div>
+        <div class="field">
+          <label>Cuotas</label>
+          <input type="number" id="cuotas" placeholder="1" min="1" />
+        </div>
+        <div class="field">
+          <label>Categoría</label>
+          <select id="categoria">
+            <option value="">Auto</option>
+            <option value="Supermercado">Supermercado</option>
+            <option value="Restaurante / Delivery">Restaurante</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Indumentaria">Indumentaria</option>
+            <option value="Salud">Salud</option>
+            <option value="Farmacia">Farmacia</option>
+            <option value="Entretenimiento">Entretenimiento</option>
+            <option value="Servicios">Servicios</option>
+            <option value="Suscripciones">Suscripciones</option>
+            <option value="Educación">Educación</option>
+            <option value="Tecnología">Tecnología</option>
+            <option value="Viajes">Viajes</option>
+            <option value="Otros">Otros</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Notas</label>
+        <textarea id="notas" placeholder="Cualquier detalle extra..."></textarea>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="previewManual()">Ver preview →</button>
+    <div id="status-manual" class="status"></div>
+  </div>
+
+  <!-- PANEL FOTO -->
+  <div id="panel-foto" style="display:none;">
+    <div class="card">
+      <div class="card-label">Subir foto del ticket</div>
+      <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-icon">🧾</div>
+        Tocá para subir una foto del ticket
+      </div>
+      <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)" />
+      <img id="imgPreview" />
+      <div id="analyzing" class="analyzing">
+        <div class="dot-loader">Analizando ticket con IA...</div>
+      </div>
+      <div id="status-foto" class="status"></div>
+    </div>
+  </div>
+
+  <!-- PANEL PREVIEW -->
+  <div id="panel-preview" style="display:none;">
+    <div class="card">
+      <div class="card-label">Confirmar antes de guardar</div>
+      <div id="preview-content"></div>
+    </div>
+    <button class="btn-primary" onclick="guardarGasto()">Confirmar y guardar en planilla ✓</button>
+    <button class="btn-secondary" onclick="volverForm()">← Volver y editar</button>
+    <div id="status-save" class="status"></div>
+  </div>
+</div>
+
+<script>
+const WEBHOOK = 'https://script.google.com/macros/s/AKfycbxu9IY63ZpuP4-G00q_1uwRjlCv_CmGgioyLlxlu2wpg6u7ZT_uHxYM4eSaPzgwpqvmdg/exec';
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+let pendingGasto = null;
+let currentTab = 'manual';
+
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('fecha').value = today;
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tab-manual').classList.toggle('active', tab === 'manual');
+  document.getElementById('tab-foto').classList.toggle('active', tab === 'foto');
+  document.getElementById('panel-manual').style.display = tab === 'manual' ? '' : 'none';
+  document.getElementById('panel-foto').style.display = tab === 'foto' ? '' : 'none';
+  document.getElementById('panel-preview').style.display = 'none';
+}
+
+function inferCategoria(concepto) {
+  const c = (concepto || '').toLowerCase();
+  if (/super|carrefour|dia|coto|jumbo|disco|verdurer|almacen|mercado/.test(c)) return 'Supermercado';
+  if (/restau|lunch|almuerzo|cena|café|cafe|bar|delivery|pizza|sushi|burger|rappi|pedido/.test(c)) return 'Restaurante / Delivery';
+  if (/nafta|combustible|peaje|uber|cabify|taxi|subte|colectivo|tren|bus|auto|estacion/.test(c)) return 'Transporte';
+  if (/ropa|zapatilla|zapato|indumentaria|camisa|pantalon|vestido|cartera|zara|adidas|nike/.test(c)) return 'Indumentaria';
+  if (/medic|doctor|consulta|clinica|hospital|turno|salud/.test(c)) return 'Salud';
+  if (/farmacia|medicamento|remedios/.test(c)) return 'Farmacia';
+  if (/cine|teatro|museo|concierto|show|evento|juego|entretenimiento/.test(c)) return 'Entretenimiento';
+  if (/luz|agua|gas|internet|telefon|servicio|expensa/.test(c)) return 'Servicios';
+  if (/netflix|spotify|disney|suscripcion|adobe|amazon/.test(c)) return 'Suscripciones';
+  if (/libro|curso|universidad|colegio|educacion|facultad/.test(c)) return 'Educación';
+  if (/tech|celular|computadora|notebook|tablet|electronica/.test(c)) return 'Tecnología';
+  if (/hotel|vuelo|viaje|turismo|airbnb|hospedaje/.test(c)) return 'Viajes';
+  return 'Otros';
+}
+
+function setStatus(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'status ' + type;
+}
+
+function previewManual() {
+  const importe = document.getElementById('importe').value;
+  const moneda = document.getElementById('moneda').value;
+  const concepto = document.getElementById('concepto').value.trim();
+  const tipoPago = document.getElementById('tipoPago').value;
+  const banco = document.getElementById('banco').value;
+
+  if (!importe || !moneda || !concepto || !tipoPago || !banco) {
+    setStatus('status-manual', 'Completá todos los campos obligatorios (*)','err');
+    return;
+  }
+
+  const fecha = document.getElementById('fecha').value || today;
+  const catSelect = document.getElementById('categoria').value;
+  const categoria = catSelect || inferCategoria(concepto);
+
+  pendingGasto = {
+    fecha,
+    comercio: document.getElementById('comercio').value,
+    concepto, categoria,
+    importe: parseFloat(importe),
+    moneda, tipoPago, banco,
+    impuestos: document.getElementById('impuestos').value || '',
+    cuotas: document.getElementById('cuotas').value || '',
+    notas: document.getElementById('notas').value || '',
+    mes: new Date(fecha + 'T00:00:00').getMonth() + 1
+  };
+
+  showPreview(pendingGasto);
+}
+
+function showPreview(g) {
+  const fields = [
+    ['Fecha', g.fecha],
+    ['Comercio', g.comercio || '—'],
+    ['Concepto', g.concepto],
+    ['Categoría', g.categoria],
+    ['Importe', g.importe + ' ' + g.moneda, true],
+    ['Tipo de pago', g.tipoPago],
+    ['Banco / Entidad', g.banco],
+    ['Impuestos', g.impuestos || '—'],
+    ['Cuotas', g.cuotas || '—'],
+    ['Notas', g.notas || '—'],
+    ['Pestaña destino', MESES[g.mes - 1]]
+  ];
+  document.getElementById('preview-content').innerHTML = fields.map(([l, v, accent]) =>
+    `<div class="preview-row">
+      <span class="preview-key">${l}</span>
+      <span class="preview-val${accent ? ' accent' : ''}">${v}</span>
+    </div>`
+  ).join('');
+  document.getElementById('panel-manual').style.display = 'none';
+  document.getElementById('panel-foto').style.display = 'none';
+  document.getElementById('panel-preview').style.display = '';
+  document.getElementById('status-save').className = 'status';
+}
+
+function volverForm() {
+  document.getElementById('panel-preview').style.display = 'none';
+  if (currentTab === 'foto') {
+    document.getElementById('panel-foto').style.display = '';
+  } else {
+    document.getElementById('panel-manual').style.display = '';
+  }
+}
+
+async function guardarGasto() {
+  if (!pendingGasto) return;
+  setStatus('status-save', 'Guardando en Google Sheets...', 'loading');
+  try {
+    await fetch(WEBHOOK, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'addGasto', ...pendingGasto })
+    });
+    setStatus('status-save', 'Gasto guardado correctamente ✓', 'ok');
+    setTimeout(() => { resetForm(); volverForm(); }, 2000);
+  } catch(e) {
+    setStatus('status-save', 'Error al guardar. Verificá tu conexión.', 'err');
+  }
+}
+
+function resetForm() {
+  ['importe','concepto','comercio','impuestos','cuotas','notas'].forEach(id => document.getElementById(id).value = '');
+  ['moneda','tipoPago','banco','categoria'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fecha').value = today;
+  document.getElementById('status-manual').className = 'status';
+  pendingGasto = null;
+}
+
+async function initSheet() {
+  try {
+    await fetch(WEBHOOK + '?action=setupSheet', { mode: 'no-cors' });
+    alert('Solicitud enviada. Abrí la planilla en Google Sheets para verificar.');
+  } catch(e) {
+    alert('Error al conectar. Verificá tu conexión.');
+  }
+}
+
+async function handleFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const preview = document.getElementById('imgPreview');
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    document.getElementById('analyzing').style.display = 'block';
+    document.getElementById('status-foto').className = 'status';
+    try {
+      const base64 = e.target.result.split(',')[1];
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'image', source: { type: 'base64', media_type: file.type, data: base64 } },
+              { type: 'text', text: `Analizá este ticket de compra y devolvé SOLO un JSON con estos campos exactos (sin markdown, sin explicaciones):
+{"fecha":"YYYY-MM-DD","comercio":"","concepto":"","importe":0,"moneda":"ARS","tipoPago":"","banco":"","impuestos":0,"cuotas":1,"notas":""}
+- fecha: la del ticket, si no se ve usá hoy ${today}
+- moneda: ARS o USD
+- tipoPago: Efectivo, Débito, Crédito o Transferencia
+- banco: Galicia, BBVA, Mercado Pago, Efectivo u Otro
+- concepto: descripción corta de qué se compró
+- impuestos: monto si aparece, sino 0
+- notas: info adicional relevante` }
+            ]
+          }]
+        })
+      });
+      const data = await resp.json();
+      const text = data.content.map(b => b.text || '').join('');
+      const clean = text.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(clean);
+      document.getElementById('analyzing').style.display = 'none';
+      parsed.categoria = inferCategoria(parsed.concepto || '');
+      parsed.mes = new Date((parsed.fecha || today) + 'T00:00:00').getMonth() + 1;
+      pendingGasto = parsed;
+      showPreview(parsed);
+    } catch(err) {
+      document.getElementById('analyzing').style.display = 'none';
+      setStatus('status-foto', 'No pude leer el ticket. Probá con mejor foto o cargalo manualmente.', 'err');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+</body>
+</html>
